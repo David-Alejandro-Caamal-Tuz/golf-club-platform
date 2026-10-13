@@ -20,6 +20,9 @@ interface Booking {
   course_name: string;
 }
 
+// URL dinámica para desarrollo y producción
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function Home() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -35,14 +38,14 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const coursesRes = await fetch('http://localhost:4000/api/courses');
+      const coursesRes = await fetch(`${API_URL}/api/courses`);
       const coursesData = await coursesRes.json();
       setCourses(Array.isArray(coursesData) ? coursesData : []);
       if (Array.isArray(coursesData) && coursesData.length > 0) {
         setCourseId(coursesData[0].id);
       }
 
-      const bookingsRes = await fetch('http://localhost:4000/api/bookings');
+      const bookingsRes = await fetch(`${API_URL}/api/bookings`);
       const bookingsData = await bookingsRes.json();
       setBookings(Array.isArray(bookingsData) ? bookingsData : []);
     } catch (error) {
@@ -70,7 +73,7 @@ export default function Home() {
     }
 
     try {
-      const res = await fetch('http://localhost:4000/api/bookings', {
+      const res = await fetch(`${API_URL}/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -98,7 +101,6 @@ export default function Home() {
     }
   };
 
-  // Función para hacer scroll suave hacia la sección de reservas
   const scrollToBooking = () => {
     const section = document.getElementById('reservas-section');
     if (section) {
@@ -117,16 +119,15 @@ export default function Home() {
         <nav className="hidden md:flex space-x-8 text-sm tracking-wider uppercase text-slate-300">
           <a href="#inicio" className="hover:text-emerald-400 transition">Inicio</a>
           <a href="#campos" className="hover:text-emerald-400 transition">Campos</a>
-          <button onClick={scrollToBooking} className="hover:text-emerald-400 transition">Reservar</button>
+          <button onClick={scrollToBooking} className="hover:text-emerald-400 transition cursor-pointer">Reservar</button>
         </nav>
         <div className="text-xs uppercase tracking-widest text-slate-400 border border-slate-700 px-3 py-1 rounded">
           Español
         </div>
       </header>
 
-      {/* Hero Section (Inspirado en la referencia visual) */}
+      {/* Hero Section */}
       <section id="inicio" className="relative h-[85vh] flex items-center justify-center text-center px-4">
-        {/* Imagen de fondo estilo campo de golf con overlay oscuro */}
         <div 
           className="absolute inset-0 bg-cover bg-center z-0 opacity-40"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=1920&auto=format&fit=crop')` }}
@@ -146,7 +147,7 @@ export default function Home() {
           <div className="pt-4">
             <button 
               onClick={scrollToBooking}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-widest text-xs font-semibold px-8 py-4 rounded shadow-lg transition duration-300"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-widest text-xs font-semibold px-8 py-4 rounded shadow-lg transition duration-300 cursor-pointer"
             >
               Reserva tu Tee Time
             </button>
@@ -154,7 +155,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contenido Principal / Sección de Reservas y Campos */}
+      {/* Contenido Principal */}
       <main id="reservas-section" className="max-w-6xl mx-auto px-6 py-16 space-y-16">
         
         {loading ? (
@@ -162,7 +163,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Columna Izquierda: Formulario de Reserva (Ocupa 2 columnas) */}
+            {/* Formulario de Reserva */}
             <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-xl shadow-2xl">
               <h2 className="text-2xl font-serif text-emerald-400 mb-2">Portal de Reservas - Tee Times</h2>
               <p className="text-slate-400 text-sm mb-6">Selecciona tu campo preferido, fecha y horario para asegurar tu salida.</p>
@@ -216,7 +217,7 @@ export default function Home() {
                   <button 
                     type="submit" 
                     disabled={submitting}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-widest text-xs font-semibold py-4 rounded transition duration-200 disabled:opacity-50 shadow-md"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-widest text-xs font-semibold py-4 rounded transition duration-200 disabled:opacity-50 shadow-md cursor-pointer"
                   >
                     {submitting ? 'Procesando Reserva...' : 'Confirmar y Bloquear Tee Time'}
                   </button>
@@ -224,7 +225,7 @@ export default function Home() {
               </form>
             </div>
 
-            {/* Columna Derecha: Campos Disponibles */}
+            {/* Campos Disponibles */}
             <div className="space-y-6">
               <div id="campos" className="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl">
                 <h3 className="text-lg font-serif text-emerald-400 mb-4 border-b border-slate-800 pb-3">Nuestros Campos</h3>
@@ -246,7 +247,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Sección Inferior: Próximas Salidas Registradas */}
+        {/* Salidas Confirmadas */}
         <section className="bg-slate-900 border border-slate-800 p-8 rounded-xl shadow-xl">
           <h3 className="text-xl font-serif text-emerald-400 mb-6">Próximas Salidas Confirmadas (Tee Times)</h3>
           {bookings.length === 0 ? (
