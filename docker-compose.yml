@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: golf_postgres
+    environment:
+      POSTGRES_USER: golf_admin
+      POSTGRES_PASSWORD: golf_password
+      POSTGRES_DB: golf_club_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
